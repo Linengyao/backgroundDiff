@@ -2,10 +2,43 @@
 //
 
 #include <iostream>
-
+#include <opencv.hpp>
+using namespace cv;
+using namespace std;
 int main()
 {
-    std::cout << "Hello World!\n";
+	Mat bgMat;
+	Mat subMat;
+	Mat bny_subMat;
+	int cnt = 0;
+	VideoCapture capVideo(0);
+
+	while (1)
+	{
+
+		Mat frame;
+		Mat grayMat;
+		capVideo >> frame;
+		cvtColor(frame, frame, COLOR_BGR2GRAY);
+		if (cnt == 0)
+		{
+			//第一帧，获得背景图像
+			frame.copyTo(bgMat);
+		}
+		else
+		{
+			//第二帧开始背景差分
+			//背景图像和当前图像相减
+			absdiff(frame, bgMat, subMat);
+			//差分结果二值化
+			threshold(subMat, bny_subMat, 50, 255, CV_THRESH_BINARY);
+			imshow("b_subMat", bny_subMat);
+			imshow("subMat", subMat);
+			waitKey(30);
+		}
+		cnt++;
+	}
+    //std::cout << "Hello World!\n";
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
